@@ -138,11 +138,12 @@ get_playback_options = ->
 get_sub_options = ->
 	ret = {}
 	append_property(ret, "sub-ass-override")
-	append_property(ret, "sub-ass-force-style")
-	append_property(ret, "sub-ass-vsfilter-aspect-compat")
+	append_property(ret, "sub-ass-style-overrides")
+	append_property(ret, "sub-ass-use-video-data")
 	append_property(ret, "sub-auto")
 	append_property(ret, "sub-pos")
 	append_property(ret, "sub-delay")
+	append_property(ret, "sub-speed")
 	append_property(ret, "sub-scale")
 	append_property(ret, "sub-font")
 	append_property(ret, "sub-font-size")
@@ -444,6 +445,8 @@ encode = (region, startTime, endTime, attempt, overrideCrf, lastSize, target) ->
 		if res
 			message("Encoded successfully! Saved to\\N#{bold(out_path)}\\NCRF: #{crf}")
 			emit_event("encode-finished", "success")
+			if options.completion_command != ""
+				mp.command(options.completion_command\gsub("%%{output}", out_path))
 		else
 			message("Encode failed! Check the logs for details.")
 			emit_event("encode-finished", "fail")
