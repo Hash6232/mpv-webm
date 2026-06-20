@@ -82,11 +82,13 @@ expand_properties = (text, magic="$") ->
 format_filename = (startTime, endTime, videoFormat) ->
 	hasAudioCodec = videoFormat.audioCodec != ""
 	is_network = not file_exists(mp.get_property("path") or "")
+	msg.verbose("format_filename: path=#{mp.get_property('path')} is_network=#{is_network}")
 	replaceFirst =
 		"%%mp": "%%mH.%%mM.%%mS"
 		"%%mP": "%%mH.%%mM.%%mS.%%mT"
 		"%%p": "%%wH.%%wM.%%wS"
 		"%%P": "%%wH.%%wM.%%wS.%%wT"
+	yt_title = mp.get_property("user-data/webm/youtube-title", "")
 	replaceTable =
 		"%%wH": string.format("%02d", math.floor(startTime/(60*60)))
 		"%%wh": string.format("%d", math.floor(startTime/(60*60)))
@@ -104,8 +106,28 @@ format_filename = (startTime, endTime, videoFormat) ->
 		"%%ms": string.format("%d", math.floor(endTime))
 		"%%mf": string.format("%s", endTime)
 		"%%mT": string.sub(string.format("%.3f", endTime%1), 3)
-		"%%f": if is_network then mp.get_property("media-title") else mp.get_property("filename")
-		"%%F": if is_network then mp.get_property("media-title") else mp.get_property("filename/no-ext")
+		"%%f": if is_network then
+			if yt_title ~= ""
+				yt_title
+			else
+				title = mp.get_property("media-title") or ""
+				if title ~= "" and not title\match("^https?://") and not title\match("[&?]")
+					title
+				else
+					mp.get_property("filename")
+		else
+			mp.get_property("filename")
+		"%%F": if is_network then
+			if yt_title ~= ""
+				yt_title
+			else
+				title = mp.get_property("media-title") or ""
+				if title ~= "" and not title\match("^https?://") and not title\match("[&?]")
+					title
+				else
+					mp.get_property("filename/no-ext")
+		else
+			mp.get_property("filename/no-ext")
 		"%%s": seconds_to_path_element(startTime)
 		"%%S": seconds_to_path_element(startTime, true)
 		"%%e": seconds_to_path_element(endTime)
