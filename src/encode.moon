@@ -457,7 +457,7 @@ encode = (region, startTime, endTime, attempt, overrideCrf, lastSize, target) ->
 		if is_temporary
 			os.remove(path)
 		
-		return res
+		return res, out_path
 
 encodeWithTarget = (region, startTime, endTime) ->
 	attempt = 1
@@ -465,28 +465,13 @@ encodeWithTarget = (region, startTime, endTime) ->
 	crf = options.crf
 
 	if options.multiple_attempts and not options.strict_filesize_constraint and format.acceptsBitrate and options.target_filesize > 0 and crf >= 0
-		originalStartTime = startTime
-		originalEndTime = endTime
-		path, is_stream, is_temporary, startTime, endTime = find_path(startTime, endTime) 
-
-		dir = ""
-		if is_stream
-			dir = parse_directory("~")
-		else
-			dir, _ = utils.split_path(path)
-
-		if options.output_directory != ""
-			dir = parse_directory(options.output_directory)
-
-		formatted_filename = format_filename(originalStartTime, originalEndTime, format)
-		out_path = utils.join_path(dir, formatted_filename)
 		target = options.target_filesize * 1024
 		lastSize = 0
 		lastCrf = crf - 1
 		res = false
 
 		while attempt <= 63
-			res = encode(region, startTime, endTime, attempt, crf, lastSize, target)
+			res, out_path = encode(region, startTime, endTime, attempt, crf, lastSize, target)
 
 			if res and crf < 63
 				file = assert(io.open(out_path, "r"))
