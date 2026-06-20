@@ -81,6 +81,7 @@ expand_properties = (text, magic="$") ->
 
 format_filename = (startTime, endTime, videoFormat) ->
 	hasAudioCodec = videoFormat.audioCodec != ""
+	is_network = not file_exists(mp.get_property("path") or "")
 	replaceFirst =
 		"%%mp": "%%mH.%%mM.%%mS"
 		"%%mP": "%%mH.%%mM.%%mS.%%mT"
@@ -103,8 +104,8 @@ format_filename = (startTime, endTime, videoFormat) ->
 		"%%ms": string.format("%d", math.floor(endTime))
 		"%%mf": string.format("%s", endTime)
 		"%%mT": string.sub(string.format("%.3f", endTime%1), 3)
-		"%%f": mp.get_property("filename")
-		"%%F": mp.get_property("filename/no-ext")
+		"%%f": if is_network then mp.get_property("media-title") else mp.get_property("filename")
+		"%%F": if is_network then mp.get_property("media-title") else mp.get_property("filename/no-ext")
 		"%%s": seconds_to_path_element(startTime)
 		"%%S": seconds_to_path_element(startTime, true)
 		"%%e": seconds_to_path_element(endTime)
