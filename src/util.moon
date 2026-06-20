@@ -161,6 +161,27 @@ parse_directory = (dir) ->
 -- from stats.lua
 is_windows = type(package) == "table" and type(package.config) == "string" and package.config\sub(1, 1) == "\\"
 
+mpv_binary = "mpv"
+resolve_mpv_binary = ->
+  home = os.getenv("HOME") or ""
+  for p in *{
+    "/Applications/mpv.app/Contents/MacOS/mpv"
+    home .. "/Applications/mpv.app/Contents/MacOS/mpv"
+    "/usr/local/bin/mpv"
+    "/opt/homebrew/bin/mpv"
+  }
+    if utils.file_info(p)
+      return p
+  return "mpv"
+mpv_binary = resolve_mpv_binary!
+
+get_expanded_path = ->
+  current = os.getenv("PATH") or ""
+  for p in *{"/opt/homebrew/bin", "/usr/local/bin", "/opt/local/bin"}
+    if not current\find(p, 1, true)
+      current = p .. ":" .. current
+  return current
+
 trim = (s) ->
 	return s\match("^%s*(.-)%s*$")
 
@@ -197,6 +218,8 @@ shell_escape = (args) ->
 
 run_subprocess_popen = (command_line) ->
 	command_line_string = shell_escape(command_line)
+	if not is_windows
+		command_line_string = "PATH=" .. get_expanded_path! .. " " .. command_line_string
 	-- Redirect stderr to stdout, because for some reason
 	-- the progress is outputted to stderr???
 	command_line_string ..= " 2>&1"

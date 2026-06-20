@@ -285,7 +285,7 @@ encode = (region, startTime, endTime, attempt, overrideCrf, lastSize, target) ->
 		return
 
 	command = {
-		"mpv", path,
+		mpv_binary, path,
 		"--start=" .. seconds_to_time_string(startTime, false, true),
 		"--end=" .. seconds_to_time_string(endTime, false, true),
 		-- When loop-file=inf, the encode won't end. Set this to override.
