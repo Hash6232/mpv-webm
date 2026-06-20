@@ -57,8 +57,8 @@ class FirstpassStats
     @size: () => (fields_before_duration + 1 + fields_after_duration) * 8
 
     get_duration: () =>
-        big_endian_binary_duration = reverse(@binary_duration)
-        read_double(reversed_binary_duration) / duration_multiplier
+	big_endian_binary_duration = reverse(@binary_duration)
+		read_double(big_endian_binary_duration) / duration_multiplier
     
     set_duration: (duration) =>
         big_endian_binary_duration = write_double(duration * duration_multiplier)
