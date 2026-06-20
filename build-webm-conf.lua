@@ -4,9 +4,9 @@ local _, _, options = options_file_contents:find("(%b{})")
 -- Remove brackets
 local _, _, options = options:find("^{(.*)}$")
 -- Print line by line
-for line in options:gmatch("(.-)\n") do
+for _line in options:gmatch("(.-)\n") do
     -- Trim whitespace
-    line = line:gsub("^%s*(.-)%s*$", "%1")
+    line = _line:gsub("^%s*(.-)%s*$", "%1")
     
     if line ~= "" then
         -- Change comments from -- to #
