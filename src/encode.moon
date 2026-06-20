@@ -480,7 +480,7 @@ encodeWithTarget = (region, startTime, endTime) ->
 
 		formatted_filename = format_filename(originalStartTime, originalEndTime, format)
 		out_path = utils.join_path(dir, formatted_filename)
-		target = options.target_filesize * 1024 * 1024 / 1000
+		target = options.target_filesize * 1024
 		lastSize = 0
 		lastCrf = crf - 1
 		res = false
